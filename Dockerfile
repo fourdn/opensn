@@ -1,0 +1,8 @@
+FROM postgres:9.6
+
+ENV POSTGRES_USER postgres
+ENV POSTGRES_PASSWORD postgres
+ENV POSTGRES_DB opensn
+
+EXPOSE 5432
+
