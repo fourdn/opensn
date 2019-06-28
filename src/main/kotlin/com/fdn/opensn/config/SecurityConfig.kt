@@ -1,5 +1,6 @@
 package com.fdn.opensn.config
 
+import com.fdn.opensn.domain.UserRole
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
@@ -27,7 +28,7 @@ class SecurityConfig : WebSecurityConfigurerAdapter() {
     val user = User.withDefaultPasswordEncoder()
         .username("user")
         .password("password")
-        .roles("USER")
+        .roles(UserRole.USER.toString())
         .build()
 
     return InMemoryUserDetailsManager(user)
