@@ -19,7 +19,7 @@ constructor(private val userRepository: UserRepository) : UserDetailsService {
     return if (user != null) {
       UserPrincipal(user)
     } else {
-      throw UsernameNotFoundException("User does not exist")
+      throw UsernameNotFoundException("User \"$username\" does not exist")
     }
   }
 
