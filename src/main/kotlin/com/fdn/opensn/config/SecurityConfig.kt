@@ -17,7 +17,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 
 @Configuration
 @EnableWebSecurity
-@ComponentScan("com.fdn.opensn.service")
 class SecurityConfig @Autowired
 constructor(
     private val simpleAuthProvider: SimpleAuthenticationProvider,
@@ -33,22 +32,21 @@ constructor(
     http.authorizeRequests().antMatchers("/main").hasRole(UserRole.USER.toString())
 
     http.exceptionHandling().authenticationEntryPoint(authenticationEntryPoint)
-    http.formLogin().successHandler(authenticationSuccessHandler)
-    http.formLogin().failureHandler(authenticationFailureHandler)
 
-    http.logout().logoutUrl("/logout").logoutSuccessUrl("/login")
+    http.formLogin().apply {
+      successHandler(authenticationSuccessHandler)
+      failureHandler(authenticationFailureHandler)
+    }
+
+    http.logout().logoutUrl("/logout").logoutSuccessUrl("/")
   }
 
   /**
    * Adds authentication based upon the custom AuthenticationProvider.
    */
-  override fun configure(auth: AuthenticationManagerBuilder) {
-    auth.authenticationProvider(simpleAuthProvider)
-
-    auth.inMemoryAuthentication() // FIXME delete me
-        .withUser("user")
-        .password(passwordEncoder().encode("pass"))
-        .roles(UserRole.USER.toString())
+  @Autowired
+  fun configureAuthManager(authenticationManagerBuilder: AuthenticationManagerBuilder) {
+    authenticationManagerBuilder.authenticationProvider(simpleAuthProvider)
   }
 
   @Bean

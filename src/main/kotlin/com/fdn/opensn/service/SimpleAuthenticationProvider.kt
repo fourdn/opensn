@@ -5,6 +5,7 @@ import org.springframework.security.authentication.AuthenticationProvider
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
+import org.springframework.security.crypto.bcrypt.BCrypt
 import org.springframework.stereotype.Component
 
 @Component
@@ -19,7 +20,7 @@ constructor(
 
     val userDetails = userDetailsService.loadUserByUsername(username)
 
-    return if (userDetails.password == password) {
+    return if (BCrypt.checkpw(password, userDetails.password)) {
       UsernamePasswordAuthenticationToken(userDetails.username, userDetails.password, userDetails.authorities)
     } else {
       throw BadCredentialsException("Authentication failed")
@@ -27,7 +28,7 @@ constructor(
   }
 
   override fun supports(authentication: Class<*>): Boolean {
-    return authentication == UsernamePasswordAuthenticationToken::class
+    return authentication == UsernamePasswordAuthenticationToken::class.java
   }
 
 }
