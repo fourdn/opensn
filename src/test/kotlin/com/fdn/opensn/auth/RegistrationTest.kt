@@ -57,7 +57,7 @@ class RegistrationTest {
 
   @Test
   fun passwordTooShortTest() {
-    val userDto = UserDto("passwordTooShortTest", "p") // FIXME take off common part of tests
+    val userDto = UserDto("passwordTooShortTest", "p")
     val response = sendRegistrationRequest(userDto)
     assertEquals(200, response.statusCode)
 
@@ -67,12 +67,14 @@ class RegistrationTest {
     assertEquals(false, jsonPath.getBoolean("success"))
   }
 
-  private fun sendRegistrationRequest(userDto: UserDto): Response {
-    val request = RestAssured.given().apply {
-      header("Content-Type", "application/json")
-      body(userDto)
+  companion object {
+    fun sendRegistrationRequest(userDto: UserDto): Response {
+      val request = RestAssured.given().apply {
+        header("Content-Type", "application/json")
+        body(userDto)
+      }
+      return request.post("/registration")
     }
-    return request.post("/registration")
   }
 
 }
