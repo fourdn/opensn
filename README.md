@@ -9,6 +9,5 @@ docker build -t opensn .
 #### Run docker container
 
 ```bash
-docker run -it --rm -p 5431:5432 opensn
+docker run -it --rm -p 5432:5432 opensn
 ```
-
