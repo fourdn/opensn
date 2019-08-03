@@ -11,6 +11,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.junit4.SpringRunner
+import javax.servlet.http.HttpServletResponse
 
 @RunWith(SpringRunner::class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, classes = [OpensnApplication::class])
@@ -20,7 +21,7 @@ class RegistrationTest {
   fun registerUserTest() {
     val userDto = UserDto("registerUserTest", "registerUserTest")
     val response = sendRegistrationRequest(userDto)
-    assertEquals(200, response.statusCode)
+    assertEquals(HttpServletResponse.SC_OK, response.statusCode)
 
     val jsonPath = response.jsonPath()
     assertEquals(true, jsonPath.getBoolean("success"))
@@ -32,11 +33,11 @@ class RegistrationTest {
   fun usernameAlreadyTakenTest() {
     val userDto = UserDto("usernameAlreadyTakenTest", "usernameAlreadyTakenTest")
     val response = sendRegistrationRequest(userDto)
-    assertEquals(200, response.statusCode)
+    assertEquals(HttpServletResponse.SC_OK, response.statusCode)
     assertEquals(RegistrationCode.SUCCESS, response.jsonPath().getInt("statusCode"))
 
     val response2 = sendRegistrationRequest(userDto)
-    assertEquals(200, response2.statusCode)
+    assertEquals(HttpServletResponse.SC_OK, response2.statusCode)
     val jsonPath = response2.jsonPath()
     assertEquals(RegistrationCode.USERNAME_TAKEN, jsonPath.getInt("statusCode"))
     assertEquals(RegistrationMessage.USERNAME_TAKEN, jsonPath.getString("message"))
@@ -47,7 +48,7 @@ class RegistrationTest {
   fun usernameTooShortTest() {
     val userDto = UserDto("u", "usernameTooShortTest")
     val response = sendRegistrationRequest(userDto)
-    assertEquals(200, response.statusCode)
+    assertEquals(HttpServletResponse.SC_OK, response.statusCode)
 
     val jsonPath = response.jsonPath()
     assertEquals(RegistrationCode.USERNAME_SHORT, jsonPath.getInt("statusCode"))
@@ -59,7 +60,7 @@ class RegistrationTest {
   fun passwordTooShortTest() {
     val userDto = UserDto("passwordTooShortTest", "p")
     val response = sendRegistrationRequest(userDto)
-    assertEquals(200, response.statusCode)
+    assertEquals(HttpServletResponse.SC_OK, response.statusCode)
 
     val jsonPath = response.jsonPath()
     assertEquals(RegistrationCode.PASSWORD_SHORT, jsonPath.getInt("statusCode"))
