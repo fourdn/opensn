@@ -1,11 +1,11 @@
 package com.fdn.opensn.service
 
 import com.fdn.opensn.domain.UserPrincipal
-import org.springframework.security.core.userdetails.UsernameNotFoundException
-import org.springframework.security.core.userdetails.UserDetails
 import com.fdn.opensn.repository.UserRepository
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
+import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -19,7 +19,7 @@ constructor(private val userRepository: UserRepository) : UserDetailsService {
     return if (user != null) {
       UserPrincipal(user)
     } else {
-      throw UsernameNotFoundException("User does not exist")
+      throw UsernameNotFoundException("User \"$username\" does not exist")
     }
   }
 

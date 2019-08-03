@@ -1,8 +1,7 @@
-package com.fdn.opensn
+package com.fdn.opensn.repository
 
 import com.fdn.opensn.domain.User
 import com.fdn.opensn.domain.UserRole
-import com.fdn.opensn.repository.UserRepository
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
