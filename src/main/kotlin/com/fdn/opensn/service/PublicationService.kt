@@ -55,8 +55,8 @@ constructor(
           this.target,
           this.author,
           this.privateStatus,
-          this.contentType,
-          this.content
+          publicationDto.contentType,
+          publicationDto.content
       ).apply { id = publication.id })
     }
     return PublicationResponseDto(success)
