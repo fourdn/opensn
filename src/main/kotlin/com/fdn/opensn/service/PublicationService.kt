@@ -19,9 +19,52 @@ constructor(
 ) {
 
   fun createPost(publicationDto: PublicationDto): PublicationResponseDto {
+    // TODO make sure that user can create the publication on the target's page
+    val (success, errorMessages) = validatePublicationDto(publicationDto)
+    if (!success) {
+      return PublicationResponseDto(success = success, errorMessages = errorMessages)
+    }
+
+    val target = userRepository.findById(publicationDto.targetId).get()
+    val author = userRepository.findById(publicationDto.authorId).get()
+    val publication = Publication(target, author, publicationDto.privateStatus, publicationDto.contentType,
+        publicationDto.content)
+    val saved = publicationRepository.save(publication)
+    return PublicationResponseDto(success, "/publication/" + saved.id) // TODO take off uri to the config file
+  }
+
+  // TODO make sure that user can read the publication
+  fun getPost(publicationId: Long): Publication? = publicationRepository.findByIdOrNull(publicationId)
+
+  // TODO make sure that user can update the publication
+  fun updatePost(publicationDto: PublicationDto, publicationId: Long): PublicationResponseDto? {
+    val publication = publicationRepository.findByIdOrNull(publicationId) ?: return null
+    var success = true
+    val errorMessages = PublicationErrorMessages(
+        content = kotlin.run {
+          if (publicationDto.content.isNotEmpty()) ""
+          else PublicationMessage.EMPTY_CONTENT.also { success = false }
+        }
+    )
+    if (!success) {
+      return PublicationResponseDto(success = success, errorMessages = errorMessages)
+    }
+
+    publication.run {
+      publicationRepository.save(Publication(
+          this.target,
+          this.author,
+          this.privateStatus,
+          this.contentType,
+          this.content
+      ).apply { id = publication.id })
+    }
+    return PublicationResponseDto(success)
+  }
+
+  private fun validatePublicationDto(publicationDto: PublicationDto): Pair<Boolean, PublicationErrorMessages> {
     var success = true
     // TODO handle the contentType and privateStatus errors
-    // TODO make sure that user can create the publication on the target's page
     val errorMessages = PublicationErrorMessages(
         targetId = kotlin.run {
           if (userRepository.existsById(publicationDto.targetId)) ""
@@ -36,18 +79,7 @@ constructor(
           else PublicationMessage.EMPTY_CONTENT.also { success = false }
         }
     )
-    if (!success) {
-      return PublicationResponseDto(success = success, errorMessages = errorMessages)
-    }
-
-    val target = userRepository.findById(publicationDto.targetId).get()
-    val author = userRepository.findById(publicationDto.authorId).get()
-    val publication = Publication(target, author, publicationDto.privateStatus, publicationDto.contentType)
-    val saved = publicationRepository.save(publication)
-    return PublicationResponseDto(success, "/publication/" + saved.id) // TODO take off uri to the config file
+    return Pair(success, errorMessages)
   }
-
-  // TODO make sure that user can read the publication
-  fun getPost(publicationId: Long): Publication? = publicationRepository.findByIdOrNull(publicationId)
 
 }

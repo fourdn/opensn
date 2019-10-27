@@ -25,9 +25,20 @@ constructor(private val publicationService: PublicationService) {
 
   @GetMapping("/{publicationId}")
   fun getPublication(@PathVariable publicationId: Long): ResponseEntity<Publication> {
-    val publication = publicationService.getPost(publicationId)
-    return if (publication != null) ResponseEntity.ok(publication)
-    else ResponseEntity.notFound().build()
+    val publication = publicationService.getPost(publicationId) ?: return ResponseEntity.notFound().build()
+    return ResponseEntity.ok(publication)
+    // TODO return FORBIDDEN if permission denied
+  }
+
+  @PatchMapping("/{publicationId}")
+  fun updatePublication(
+      @PathVariable publicationId: Long,
+      @RequestBody publicationDto: PublicationDto
+  ): ResponseEntity<PublicationResponseDto> {
+    val responseDto = publicationService.updatePost(publicationDto, publicationId)
+        ?: return ResponseEntity.notFound().build()
+    return if (responseDto.success) ResponseEntity.ok(responseDto)
+    else ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseDto)
     // TODO return FORBIDDEN if permission denied
   }
 

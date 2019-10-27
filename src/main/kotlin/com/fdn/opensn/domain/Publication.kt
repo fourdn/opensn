@@ -24,9 +24,11 @@ data class Publication(
     @Enumerated(EnumType.STRING)
     val contentType: ContentType = ContentType.TEXT,
 
+    val content: String = "",
+
     @Column
     @Temporal(TemporalType.TIMESTAMP)
-    var date: Date = Date()
+    val date: Date = Date()
 ) {
 
   @Id

@@ -4,9 +4,9 @@ import com.fdn.opensn.domain.ContentType
 import com.fdn.opensn.domain.PrivateStatus
 
 class PublicationDto(
-    val targetId: Long,
-    val authorId: Long,
-    val privateStatus: PrivateStatus,
-    val contentType: ContentType,
-    val content: String
+    val targetId: Long = 0,
+    val authorId: Long = 0,
+    val privateStatus: PrivateStatus = PrivateStatus.PRIVATE,
+    val contentType: ContentType = ContentType.TEXT,
+    val content: String = ""
 )
