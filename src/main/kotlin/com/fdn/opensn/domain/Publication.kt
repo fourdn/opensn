@@ -1,6 +1,8 @@
 package com.fdn.opensn.domain
 
 import com.fasterxml.jackson.annotation.JsonBackReference
+import java.time.Instant
+import java.util.*
 import javax.persistence.*
 
 @Entity
@@ -20,7 +22,11 @@ data class Publication(
     val privateStatus: PrivateStatus = PrivateStatus.PRIVATE,
 
     @Enumerated(EnumType.STRING)
-    val contentType: ContentType = ContentType.TEXT
+    val contentType: ContentType = ContentType.TEXT,
+
+    @Column
+    @Temporal(TemporalType.TIMESTAMP)
+    var date: Date = Date()
 ) {
 
   @Id
