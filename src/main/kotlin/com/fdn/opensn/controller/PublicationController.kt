@@ -1,5 +1,6 @@
 package com.fdn.opensn.controller
 
+import com.fdn.opensn.domain.OperationSuccess
 import com.fdn.opensn.domain.Publication
 import com.fdn.opensn.dto.PublicationDto
 import com.fdn.opensn.dto.PublicationResponseDto
@@ -41,5 +42,13 @@ constructor(private val publicationService: PublicationService) {
     else ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseDto)
     // TODO return FORBIDDEN if permission denied
   }
+
+  @DeleteMapping("/{publicationId}")
+  fun deletePublication(@PathVariable publicationId: Long) = when (publicationService.deletePost(publicationId)) {
+      OperationSuccess.SUCCESS -> ResponseEntity.ok()
+      OperationSuccess.OBJECT_NOT_FOUND -> ResponseEntity.notFound()
+      OperationSuccess.PERMISSION_DENIED -> ResponseEntity.status(HttpStatus.FORBIDDEN)
+      OperationSuccess.BAD_REQUEST -> ResponseEntity.badRequest()
+  }.apply { build<String>() }
 
 }

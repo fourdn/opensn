@@ -1,6 +1,7 @@
 package com.fdn.opensn.service
 
 import com.fdn.opensn.config.PublicationMessage
+import com.fdn.opensn.domain.OperationSuccess
 import com.fdn.opensn.domain.Publication
 import com.fdn.opensn.domain.PublicationErrorMessages
 import com.fdn.opensn.dto.PublicationDto
@@ -60,6 +61,13 @@ constructor(
       ).apply { id = publication.id })
     }
     return PublicationResponseDto(success)
+  }
+
+  fun deletePost(publicationId: Long): OperationSuccess {
+    val publication = publicationRepository.findByIdOrNull(publicationId) ?: return OperationSuccess.OBJECT_NOT_FOUND
+    // TODO make sure that user can delete the publication
+    publicationRepository.deleteById(publicationId)
+    return OperationSuccess.SUCCESS
   }
 
   private fun validatePublicationDto(publicationDto: PublicationDto): Pair<Boolean, PublicationErrorMessages> {
