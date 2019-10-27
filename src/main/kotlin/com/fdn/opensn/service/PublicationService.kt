@@ -8,6 +8,7 @@ import com.fdn.opensn.dto.PublicationResponseDto
 import com.fdn.opensn.repository.PublicationRepository
 import com.fdn.opensn.repository.UserRepository
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 
 @Service
@@ -18,9 +19,9 @@ constructor(
 ) {
 
   fun createPost(publicationDto: PublicationDto): PublicationResponseDto {
-    // TODO("Unimplemented")
     var success = true
     // TODO handle the contentType and privateStatus errors
+    // TODO make sure that user can create the publication on the target's page
     val errorMessages = PublicationErrorMessages(
         targetId = kotlin.run {
           if (userRepository.existsById(publicationDto.targetId)) ""
@@ -45,5 +46,8 @@ constructor(
     val saved = publicationRepository.save(publication)
     return PublicationResponseDto(success, "/publication/" + saved.id) // TODO take off uri to the config file
   }
+
+  // TODO make sure that user can read the publication
+  fun getPost(publicationId: Long): Publication? = publicationRepository.findByIdOrNull(publicationId)
 
 }
