@@ -24,7 +24,7 @@ class UserRepositoryTest {
   fun saveAndReceiveTest() {
     val user = createDemoUser()
     val savedUser = saveUser(user).also { Assert.notNull(it.id, "Saved user id must be not null") }
-    val receivedUser = getUserById(savedUser.id!!)
+    val receivedUser = getUserById(savedUser.id)
         .also { Assert.notNull(it, "Received user must be not null") }
 
     assertEquals(user.username, receivedUser!!.username)
