@@ -1,6 +1,5 @@
 package com.fdn.opensn.controller
 
-import com.fdn.opensn.domain.Conversation
 import com.fdn.opensn.domain.Message
 import com.fdn.opensn.service.MessageService
 import org.springframework.beans.factory.annotation.Autowired
@@ -15,9 +14,9 @@ constructor(
         private val messageService: MessageService
 ) {
     @GetMapping("/get-by-conversation")
-    fun getMessagesByConversation(@RequestBody conversation: Conversation): ResponseEntity<List<Message>> {
+    fun getMessagesByConversation(@RequestParam conversationId: Long): ResponseEntity<List<Message>> {
         return try {
-            ResponseEntity(messageService.getAllMessagesByConversation(conversation), HttpStatus.OK)
+            ResponseEntity(messageService.getAllMessagesByConversationId(conversationId), HttpStatus.OK)
         } catch (e: IllegalStateException) {
             ResponseEntity(HttpStatus.BAD_REQUEST)
         }

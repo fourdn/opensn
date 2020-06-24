@@ -41,7 +41,7 @@ constructor(
         return conversationRepository.existsConversationByIdAndUsersContains(conversationId, user)
     }
 
-    fun isConversationExist(conversation: Conversation): Boolean {
-        return conversationRepository.existsConversationById(conversation.id ?: return false)
+    fun isConversationExist(conversationId: Long): Boolean {
+        return conversationRepository.existsConversationById(conversationId)
     }
 }
