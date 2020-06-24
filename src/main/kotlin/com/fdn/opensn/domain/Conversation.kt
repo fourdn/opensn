@@ -13,4 +13,6 @@ data class Conversation(
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "conversation_gen")
     @SequenceGenerator(name = "conversation_gen", sequenceName = "conversation_id_seq")
     var id: Long? = null
+
+    // TODO Add conversation type, such as: personal, private, public.
 }
