@@ -30,4 +30,13 @@ constructor(
             ResponseEntity(HttpStatus.BAD_REQUEST)
         }
     }
+
+    @PostMapping("/read")
+    fun markMessageAsRead(@RequestBody messages: List<Message>): ResponseEntity<Void> {
+        return if (messageService.markMessagesAsRead(messages)) {
+            ResponseEntity(HttpStatus.OK)
+        } else {
+            ResponseEntity(HttpStatus.BAD_REQUEST)
+        }
+    }
 }

@@ -8,7 +8,10 @@ data class Message(
         val sender: User? = null,
         @ManyToOne
         val receiver: Conversation? = null,
-        val body: String = ""
+        val body: String = "",
+
+        @Enumerated(EnumType.STRING)
+        val status: MessageStatus? = null
 ) {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "message_gen")
