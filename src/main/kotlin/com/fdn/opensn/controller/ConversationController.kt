@@ -18,16 +18,16 @@ constructor(
         private val conversationService: ConversationService
 ) {
     @GetMapping("/get-all-my")
-    fun getMyConversations(@AuthenticationPrincipal userPrincipal: UserPrincipal): ResponseEntity<List<Conversation>> {
+    fun getMyConversations(): ResponseEntity<List<Conversation>> {
         return try {
-            ResponseEntity(conversationService.getAllUserConversations(userPrincipal), HttpStatus.OK)
+            ResponseEntity(conversationService.getAllUserConversations(), HttpStatus.OK)
         } catch (e: IllegalStateException) {
             ResponseEntity(HttpStatus.BAD_REQUEST)
         }
     }
 
     @PostMapping("/create")
-    fun createConversation(@RequestBody users: List<User>): ResponseEntity<String> {
+    fun createConversation(@RequestBody users: List<User>): ResponseEntity<Void> {
         return if (conversationService.createConversation(users)) {
             ResponseEntity(HttpStatus.OK)
         } else {
