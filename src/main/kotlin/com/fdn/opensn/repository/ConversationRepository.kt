@@ -6,4 +6,10 @@ import org.springframework.data.jpa.repository.JpaRepository
 
 interface ConversationRepository : JpaRepository<Conversation, Long> {
     fun findAllByUsersContains(user: User): List<Conversation>
+
+    fun existsConversationByIdAndUsersContains(id: Long, user: User): Boolean
+
+    fun existsConversationById(id: Long): Boolean
+
+    fun existsConversationByUsersEquals(users: Set<User>): Boolean
 }

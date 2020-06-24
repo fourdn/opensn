@@ -28,8 +28,20 @@ constructor(
                 ?: throw IllegalStateException("User does not exist")
 
         val conversation = Conversation(setOf(*users.toTypedArray(), user))
-        conversationRepository.save(conversation)
-        // TODO return false if trying to create existing 2 user conversation
-        return true
+
+        return if (!conversationRepository.existsConversationByUsersEquals(conversation.users)) {
+            conversationRepository.save(conversation)
+            true
+        } else {
+            throw IllegalStateException("2 user conversation already exist")
+        }
+    }
+
+    fun containsUserInConversation(conversationId: Long, user: User): Boolean {
+        return conversationRepository.existsConversationByIdAndUsersContains(conversationId, user)
+    }
+
+    fun isConversationExist(conversation: Conversation): Boolean {
+        return conversationRepository.existsConversationById(conversation.id ?: return false)
     }
 }
