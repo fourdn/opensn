@@ -2,6 +2,7 @@ package com.fdn.opensn.service
 
 import com.fdn.opensn.domain.Conversation
 import com.fdn.opensn.domain.User
+import com.fdn.opensn.dto.UserDto
 import com.fdn.opensn.repository.ConversationRepository
 import com.fdn.opensn.repository.UserRepository
 import org.springframework.beans.factory.annotation.Autowired
@@ -19,15 +20,16 @@ constructor(
         val user = userRepository.findByUsername(authentication.name)
                 ?: throw IllegalStateException("User does not exist")
 
-        return conversationRepository.findAllByUsersContains(user)
+        val findAllByUsersContains = conversationRepository.findAllByUsersContains(user)
+        return findAllByUsersContains
     }
 
-    fun createConversation(users: List<User>): Boolean {
+    fun createConversation(users: List<UserDto>): Boolean {
         val authentication = SecurityContextHolder.getContext().authentication
         val user = userRepository.findByUsername(authentication.name)
                 ?: throw IllegalStateException("User does not exist")
 
-        val conversation = Conversation(setOf(*users.toTypedArray(), user))
+        val conversation = Conversation(setOf(*users.map { User().apply { id = it.id!! } }.toTypedArray(), user))
         conversationRepository.save(conversation)
         return true
         // TODO Check for the conversation type. Do not allow a user to create 2 private conversation with

@@ -6,7 +6,8 @@ import javax.persistence.*
 data class Message(
         @ManyToOne
         val sender: User? = null,
-        @ManyToOne
+        @ManyToOne(fetch = FetchType.LAZY)
+        @JoinColumn(name = "receiver_id")
         val receiver: Conversation? = null,
         val body: String = "",
 

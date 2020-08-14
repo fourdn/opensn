@@ -5,9 +5,13 @@ spring:
     password: postgres
     driver-class-name: org.postgresql.Driver
   jpa:
+    open-in-view: false
     properties:
       hibernate:
-        temp:
-          use_jdbc_metadata_defaults: false
+#        temp:
+#          use_jdbc_metadata_defaults: false
+        jdbc:
+          lob:
+            non_contextual_creation: true
     hibernate:
       ddl-auto: create-drop

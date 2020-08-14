@@ -6,7 +6,7 @@ import javax.persistence.*
 data class Conversation(
         @ManyToMany
         val users: Set<User> = emptySet(),
-        @OneToMany
+        @OneToMany(mappedBy = "receiver", fetch = FetchType.LAZY)
         val messages: List<Message> = emptyList()
 ) {
     @Id

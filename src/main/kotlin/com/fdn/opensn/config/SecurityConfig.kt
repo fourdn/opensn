@@ -8,47 +8,73 @@ import com.fdn.opensn.service.SimpleAuthenticationProvider
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
+import org.springframework.web.cors.CorsConfiguration
+import org.springframework.web.cors.CorsConfigurationSource
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 
 @Configuration
 @EnableWebSecurity
 class SecurityConfig @Autowired
 constructor(
-    private val simpleAuthProvider: SimpleAuthenticationProvider,
-    private val authenticationEntryPoint: RESTAuthenticationEntryPoint,
-    private val authenticationFailureHandler: RESTAuthenticationFailureHandler,
-    private val authenticationSuccessHandler: RESTAuthenticationSuccessHandler
+        private val simpleAuthProvider: SimpleAuthenticationProvider,
+        private val authenticationEntryPoint: RESTAuthenticationEntryPoint,
+        private val authenticationFailureHandler: RESTAuthenticationFailureHandler,
+        private val authenticationSuccessHandler: RESTAuthenticationSuccessHandler
 ) : WebSecurityConfigurerAdapter() {
 
-  override fun configure(http: HttpSecurity) {
-    http.csrf().disable() // TODO configure csrf
+    override fun configure(http: HttpSecurity) {
+        http.cors().and().csrf().disable().authorizeRequests()
+                .antMatchers("/**").permitAll()
+                .antMatchers("/main", "/conversation/create", "/conversation/get-all-my")
+                .hasAnyRole("${UserRole.USER}")
+                .and()
 
-    http.authorizeRequests().antMatchers("/").permitAll()
-    http.authorizeRequests().antMatchers("/main").hasRole(UserRole.USER.toString())
+                .exceptionHandling().authenticationEntryPoint(authenticationEntryPoint)
+                .and()
 
-    http.exceptionHandling().authenticationEntryPoint(authenticationEntryPoint)
+                .formLogin().apply {
+                    successHandler(authenticationSuccessHandler)
+                    failureHandler(authenticationFailureHandler)
+                }
+                .and()
 
-    http.formLogin().apply {
-      successHandler(authenticationSuccessHandler)
-      failureHandler(authenticationFailureHandler)
+                .logout().logoutUrl("/logout").logoutSuccessUrl("/")
     }
 
-    http.logout().logoutUrl("/logout").logoutSuccessUrl("/")
-  }
+    /**
+     * Adds authentication based upon the custom AuthenticationProvider.
+     */
+    @Autowired
+    fun configureAuthManager(authenticationManagerBuilder: AuthenticationManagerBuilder) {
+        authenticationManagerBuilder.authenticationProvider(simpleAuthProvider)
+    }
 
-  /**
-   * Adds authentication based upon the custom AuthenticationProvider.
-   */
-  @Autowired
-  fun configureAuthManager(authenticationManagerBuilder: AuthenticationManagerBuilder) {
-    authenticationManagerBuilder.authenticationProvider(simpleAuthProvider)
-  }
+    @Bean
+    fun passwordEncoder() = BCryptPasswordEncoder()
 
-  @Bean
-  fun passwordEncoder() = BCryptPasswordEncoder()
+    @Bean
+    fun corsConfigurationSource(): CorsConfigurationSource? {
+        val configuration = CorsConfiguration()
+        // This Origin header you can see that in Network tab
+        configuration.allowedOrigins = listOf("http://localhost:8080", "http://localhost:4200")
+        configuration.allowedMethods = listOf("GET", "POST")
+        configuration.allowedHeaders = listOf("content-type")
+        configuration.allowCredentials = true
+        val source = UrlBasedCorsConfigurationSource()
+        source.registerCorsConfiguration("/**", configuration)
+        return source
+    }
+
+    @Bean
+    @Throws(java.lang.Exception::class)
+    override fun authenticationManagerBean(): AuthenticationManager? {
+        return super.authenticationManagerBean()
+    }
 
 }

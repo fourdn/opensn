@@ -1,7 +1,9 @@
 package com.fdn.opensn.service
 
+import com.fdn.opensn.domain.Conversation
 import com.fdn.opensn.domain.Message
 import com.fdn.opensn.domain.MessageStatus
+import com.fdn.opensn.dto.MessageDto
 import com.fdn.opensn.repository.ConversationRepository
 import com.fdn.opensn.repository.MessageRepository
 import com.fdn.opensn.repository.UserRepository
@@ -30,8 +32,8 @@ constructor(
             val messagesByConversationId = messageRepository.findAllByReceiver(conversation)
 
             val setDeliveredStatus:
-                    (Message) -> Message = { Message(it.sender, it.receiver, it.body, MessageStatus.DELIVERED) }
-            val deliveredMessages = messagesByConversationId.filter { it.sender != user }
+                    (Message) -> Message = { Message(it.sender, it.receiver, it.body, MessageStatus.DELIVERED).apply { id = it.id } }
+            val deliveredMessages = messagesByConversationId.filter { it.sender!!.id != user.id }
                     .map(setDeliveredStatus)
             messageRepository.saveAll(deliveredMessages)
 
@@ -43,7 +45,7 @@ constructor(
 
     }
 
-    fun sendMessage(message: Message): Boolean {
+    fun sendMessage(message: MessageDto): Boolean {
         val authentication = SecurityContextHolder.getContext().authentication
         val user = userRepository.findByUsername(authentication.name)
                 ?: throw IllegalStateException("User does not exist")
@@ -53,7 +55,8 @@ constructor(
 
         return if (conversationService.isConversationExist(receiverId)
                 && conversationService.containsUserInConversation(receiverId, user)) {
-            val messageWithSender = Message(user, message.receiver, message.body, MessageStatus.SENT)
+            val messageWithSender = Message(user, Conversation().apply { id = receiverId }, message.body ?: "",
+                    MessageStatus.SENT)
             messageRepository.save(messageWithSender)
             true
         } else {
@@ -61,7 +64,7 @@ constructor(
         }
     }
 
-    fun markMessagesAsRead(messages: List<Message>): Boolean {
+    fun markMessagesAsRead(messages: List<MessageDto>): Boolean {
         val authentication = SecurityContextHolder.getContext().authentication
         val user = userRepository.findByUsername(authentication.name)
                 ?: throw IllegalStateException("User does not exist")

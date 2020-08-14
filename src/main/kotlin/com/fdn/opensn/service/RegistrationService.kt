@@ -19,7 +19,7 @@ constructor(
 ) {
 
   fun registerUser(userDto: UserDto): RegistrationResponseDto {
-    val receivedUser = userRepository.findByUsername(userDto.username)
+    val receivedUser = userRepository.findByUsername(userDto.username!!)
     if (receivedUser != null) {
       return RegistrationResponseDto(false, RegistrationMessage.USERNAME_TAKEN, RegistrationCode.USERNAME_TAKEN)
     }
@@ -27,7 +27,7 @@ constructor(
     if (userDto.username.length < 3) {
       return RegistrationResponseDto(false, RegistrationMessage.USERNAME_SHORT, RegistrationCode.USERNAME_SHORT)
     }
-    if (userDto.password.length < 3) {
+    if (userDto.password!!.length < 3) {
       return RegistrationResponseDto(false, RegistrationMessage.PASSWORD_SHORT, RegistrationCode.PASSWORD_SHORT)
     }
 
